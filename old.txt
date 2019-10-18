@@ -1,0 +1,194 @@
+ 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include "list.h"
+
+char *keywords[] = {"int", "char", "if"};
+int nKeyWords = 3;
+
+enum TokenType{Keyword, Scoupe, MathScoupe, String, Primitive};
+
+typedef struct Token {
+    int type; 
+    int start;
+    int end;
+    char *data;
+    char *len;
+} Token;
+
+/*typedef struct Scoupe {
+    int type;
+    int start;
+    int end;
+    ArrayList *tokens;
+} Token;*/
+
+ArrayList *list;
+
+char* readFile(const char *fileName, char isString, unsigned int *fileSize) {
+    FILE *file = fopen(fileName, "rb");
+    unsigned long size;
+    if (!file) return NULL;
+    fseek(file, 0, SEEK_END);
+    size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    char *buffer = (char*) malloc(isString ? size + 1 : size);
+    if (!buffer) {
+        fclose(file);
+        return NULL;
+    }
+    fread(buffer, size, 1, file);
+    if (isString) buffer[size] = 0;
+    fclose(file);
+    printf("success read %u bytes\n", (unsigned) size);
+    if (fileSize) *fileSize = size;
+    return buffer;
+}
+
+void formatBracket(ArrayList *tokens, int bracketLevel) {
+    char wasNewLine = 1;
+    FOR(Token, t, tokens) {
+        //for(int i = 0; i < bracketLevel; i++) printf("    ");
+        //printf(" %s %d\n", t->data, t->type);
+        
+        if(wasNewLine) {
+            for(int i = 0; i < bracketLevel; i++) printf("    ");
+            if (t->data) printf("%s", t->data);
+            wasNewLine = 0;
+        } else if (t->type == nKeyWords) {
+            printf("\n");
+            wasNewLine = 1;
+        } else {
+            //char a = t[0].type >= 0;
+            //char b = t[1].type >= 0;
+            printf("%s", t->data);
+        }
+        /*char a = t[0].type >= 0;
+        char b = t[1].type >= 0;
+        
+        if(b) {
+            printf(" %s;\n", t->data);
+            for(int i = 0; i < bracketLevel; i++) printf("    ");
+        } else {
+            printf(" %s", t->data);
+        }*/
+        
+    }
+}
+
+ArrayList* initArrayList(ArrayList *list, size_t initSize, size_t sizeOfElement) {
+    list->size = 0;
+    list->sizeOfElement = sizeOfElement;
+    list->sizeMax = initSize;
+    list->data = malloc(initSize * sizeOfElement);
+    return list;
+}
+
+int main(int argc, char **argv) {
+    unsigned fileSize;
+    char *text = readFile("main.b", true, &fileSize);
+    //Token t = {};
+    uint32_t start = 0, end = 0, pos = 0, lvl = 0, initLvl = 0;
+    bool isStarted = false, isQuoteOpened = false;
+    ArrayList *listScoupe = newArrayList(4, sizeof(ArrayList)); //список списков
+    FOR(ArrayList, list, listScoupe) initArrayList(list, 4, sizeof(Token));
+    ArrayList *currLvlList = AT(ArrayList, 0, listScoupe);
+    //initArrayList(currLvlList, 4, sizeof(Token));
+    
+    for (char *pc = text, c = *text; c; c = *pc++) {
+        pos++;
+        if (isQuoteOpened) {
+            if (c == '\"' || c == '\'') {
+                isQuoteOpened = false;
+                isStarted = false;
+                start = start;
+                end = end;
+                goto emitToken;
+            } else {
+                if (isStarted) end++;
+                else {
+                    isStarted = true;
+                    start = pos - 2;
+                    end = pos - 1;
+                }
+                continue;
+            }
+        }
+        switch (c) {
+            case '{':
+                lvl++;
+                currLvlList = (lvl < listScoupe->size) ? AT(ArrayList, lvl, listScoupe) : initArrayList(add2ArrayList(listScoupe), 4, sizeof (Token));
+                continue;
+            case '}':
+                lvl--;
+                //currLvlList->size = 0;
+                //currLvlList = AT(ArrayList, lvl, listScoupe);
+                goto emitScoupe;\
+            case '\"':
+            case '\'':
+                isQuoteOpened = true;
+                isStarted = true;
+                start = pos - 2;
+                end = pos;
+                continue;
+            case '(' ... '/':
+            case ':' ... '?':
+            case '!':
+            case '%':
+            case '&':
+            case '[':
+            case ']':
+            case '^':
+            case '|':
+            case '~':
+                if (isStarted) {
+                    isStarted = false;
+                    start = start;
+                    end = end;
+                    pos--;
+                    pc--;
+                } else {
+                    start = pos - 2;
+                    end = pos - 1;
+                }
+                goto emitToken;
+            case '0' ... '9':
+            case 'a' ... 'z':
+            case 'A' ... 'Z':
+            case '_':
+                if (isStarted) end++;
+                else {
+                    isStarted = true;
+                    start = pos - 2;
+                    end = pos - 1;
+                }
+                continue;
+            default:
+                if (isStarted) {
+                    isStarted = false;
+                    goto emitToken;
+                }
+                continue;
+        }
+emitToken:;
+        printf("%d:%d:", start, end);
+        for (int i = 0; i < lvl; i++) printf("    ");
+        for (char *c1 = text + start, *e = text + end; c1 < e; c1++) putchar(*c1);
+        putchar('\n');
+        continue;
+emitScoupe:;
+        //work
+        printf("emit scoupe\n");
+        currLvlList->size = 0;
+        currLvlList = AT(ArrayList, lvl, listScoupe);
+    }
+    
+    FOR(ArrayList, list, listScoupe) free(list->data);
+    freeArrayList(listScoupe);
+    free(text);
+    //tokenize(text);
+    return 0;
+}

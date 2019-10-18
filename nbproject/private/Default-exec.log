@@ -1,0 +1,6 @@
+called: gcc
+	/home/slava/raid/projects/brakets/parser
+	gcc
+	main.c
+	parser.c
+
