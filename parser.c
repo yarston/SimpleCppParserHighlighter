@@ -5,7 +5,8 @@ typedef enum LexType {
     NONE, NAME, NUM, OP, STRING, COMMENT, COMMENT_MULTILINE, ERROR, DOUBLE, FLOAT, HEX, DOT, CHARS
 } LexType;
 
-void lexify(char *text) {
+//TODO octal and binary numbers
+void lexify(char *text, void (*callback) (char *start, char *end)) {
     char *start = 0;
     char *end = 0;
     LexType type = NONE;
@@ -55,7 +56,6 @@ void lexify(char *text) {
                     case '}':
                     case '(':
                     case ')':
-                        //case '.':
                         type = OP;
                         start = pc;
                         break;
@@ -90,7 +90,7 @@ void lexify(char *text) {
                         type = FLOAT;
                         break;
                     case 'x':
-                        if (pc[-1] == '0') { //дополнить проверкой 1го символа
+                        if (*start == '0' && pc - start == 1) {
                             type = HEX;
                             break;
                         }
@@ -191,7 +191,7 @@ void lexify(char *text) {
                 }
                 break;
             case STRING:
-                if (c == '"') {
+                if (c == '"' && pc[-1] != 92) {
                     type = NONE;
                     end = pc;
                 }
@@ -200,7 +200,6 @@ void lexify(char *text) {
                 if (c == '\'' && pc[-1] != 92) {
                     type = NONE;
                     end = pc;
-                    //pc--;
                 }
                 break;
             case COMMENT:
@@ -215,12 +214,7 @@ void lexify(char *text) {
                 }
                 break;
         }
-        if (prevType != type && end - start > 0) {
-            putchar('\'');
-            for (char *c = start; c < end; c++) putchar(*c);
-            putchar('\'');
-            putchar('\n');
-        }
+        if (prevType != type && end - start > 0) callback(start, end);
         prevType = type;
     }
 }

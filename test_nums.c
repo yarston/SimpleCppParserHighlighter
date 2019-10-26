@@ -1,4 +1,7 @@
- 
+
+char *name = "cvx";
+char *name2 = "sd\" sd";
+
 int a = 5;
 int b=3;
 float c = 64.05;

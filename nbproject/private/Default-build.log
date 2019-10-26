@@ -1,3 +1,0 @@
-gcc main.c parser.c
-gcc: error: parser.c: Нет такого файла или каталога
-gmake: *** [Makefile:2: all] Ошибка 1
