@@ -5,6 +5,9 @@
       <in>list.c</in>
       <in>list.h</in>
       <in>main.c</in>
+      <in>parser.c</in>
+      <in>parser.h</in>
+      <in>test_nums.c</in>
     </df>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>

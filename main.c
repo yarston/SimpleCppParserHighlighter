@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "list.h"
+#include "parser.h"
 
 //Например Pointer<float> nubmers;
 //или Array<Array<float>> numbers;
@@ -302,9 +303,10 @@ emitScoupe:;
 
 void main(int argc, char **argv) {
     unsigned fileSize;
-    char *text = readFile("main.b", true, &fileSize);
+    char *text = readFile("test_nums.c", true, &fileSize);
     //parseFile(text, &parseExpression);
-    parseFile2(text);
+    //parseFile2(text);
+    lexify(text);
     free(text);
     return 0;
 }
