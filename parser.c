@@ -1,17 +1,13 @@
 #include <stdio.h>
 #include "parser.h" 
 
-typedef enum LexType {
-    NONE, NAME, NUM, OP, STRING, COMMENT, COMMENT_MULTILINE, ERROR, DOUBLE, FLOAT, HEX, DOT, CHARS
-} LexType;
-
 //TODO octal and binary numbers
-void lexify(char *text, void (*callback) (char *start, char *end)) {
+void lexify(char *text, char *textEnd, void (*callback) (char *start, char *end, LexType token)) {
     char *start = 0;
     char *end = 0;
     LexType type = NONE;
     LexType prevType = NONE;
-    for (char *pc = text, c = *text; c; pc++) {
+    for (char *pc = text, c = *text; pc < textEnd; pc++) {
         c = *pc;
         switch (type) {
             case NONE:
@@ -214,7 +210,7 @@ void lexify(char *text, void (*callback) (char *start, char *end)) {
                 }
                 break;
         }
-        if (prevType != type && end - start > 0) callback(start, end);
+        if (prevType != type && end - start > 0) callback(start, end, prevType);
         prevType = type;
     }
 }
