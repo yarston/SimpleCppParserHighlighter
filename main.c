@@ -5,7 +5,8 @@
 #include <stdbool.h>
 #include "list.h"
 #include "parser.h"
-#include "hashmap.h"
+//#include "hashmap.h" //https://github.com/petewarden/c_hashmap
+#include "map.h" //https://github.com/rxi/map
 #include "stb_truetype.h"
 #include "stb_image_write.h"
 
@@ -14,6 +15,8 @@
 
 #define STB_TRUETYPE_IMPLEMENTATION 
 #include "stb_truetype.h" /* http://nothings.org/stb/stb_truetype.h */
+
+map_int_t m;
 
 char* readFile(const char *fileName, char isString, unsigned int *fileSize) {
     FILE *file = fopen(fileName, "rb");
@@ -74,7 +77,11 @@ void drawHighlightedLine(stbtt_fontinfo *info, char *bitmap, int b_w, char *star
         start = lexEnd;
 
         switch (lexType) {
-            case NAME: argb = 0xFF00ffe2;
+            case NAME:
+                
+                //int *val = map_get(&m, "testkey");
+                
+                argb = 0xFF00ffe2;
                 break;
             case NUM:
             case DOUBLE:
@@ -179,6 +186,14 @@ void drawLines(ArrayList *lines, char *start) {
 }
 
 void main(int argc, char **argv) {
+    
+
+    map_init(&m);
+    map_set(&m, "int", 1);
+    map_set(&m, "float", 2);
+    map_set(&m, "double", 3);
+    map_set(&m, "void", 4);
+    
     unsigned fileSize;
     char *text = readFile("test_nums.c", true, &fileSize);
     ArrayList* lines = getLines(text, text + fileSize);
@@ -189,9 +204,10 @@ void main(int argc, char **argv) {
 
     //parseFile(text, &parseExpression);
     //parseFile2(text);
-     lexify(text, text + fileSize, &processTokens);
+    lexify(text, text + fileSize, &processTokens);
     free(text);
     freeArrayList(lines);
+    map_deinit(&m);
     // test_font();
     return 0;
 }
