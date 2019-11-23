@@ -41,6 +41,9 @@ typedef struct {
 #define map_get(m, key)\
   ( (m)->ref = map_get_(&(m)->base, key) )
 
+#define map_get2(m, key, n)\
+  ( (m)->ref = map_get_2(&(m)->base, key, n) )
+
 
 #define map_set(m, key, value)\
   ( (m)->tmp = (value),\

@@ -107,6 +107,28 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
   return NULL;
 }
 
+static map_node_t **map_getref2(map_base_t *m, const char *key, int n) {
+
+    unsigned hash = 5381;
+    char *str = key, *strEnd = key + n;
+    while (str < strEnd) {
+        hash = ((hash << 5) + hash) ^ *str++;
+    }
+
+    //unsigned hash = map_hash(key);
+    map_node_t **next;
+    if (m->nbuckets > 0) {
+        next = &m->buckets[map_bucketidx(m, hash)];
+        while (*next) {
+            if ((*next)->hash == hash && !strncmp((char*) (*next + 1), key, n)) {
+                return next;
+            }
+            next = &(*next)->next;
+        }
+    }
+    return NULL;
+}
+
 
 void map_deinit_(map_base_t *m) {
   map_node_t *next, *node;
@@ -123,6 +145,10 @@ void map_deinit_(map_base_t *m) {
   free(m->buckets);
 }
 
+void *map_get_2(map_base_t *m, const char *key, int n) {
+  map_node_t **next = map_getref2(m, key, n);
+  return next ? (*next)->value : NULL;
+}
 
 void *map_get_(map_base_t *m, const char *key) {
   map_node_t **next = map_getref(m, key);
