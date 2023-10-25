@@ -78,7 +78,7 @@ void processTokens(char *start, char *end, LexType token) {
 }
 
 
-void main(int argc, char **argv) {
+int main(int argc, char **argv) {
     
     long size;
     unsigned char* fontBuffer;
@@ -111,7 +111,7 @@ void main(int argc, char **argv) {
     char *text = readFile("main.c", true, &fileSize);
     ArrayList* lines = getLines(text, text + fileSize);
     
-    WindowText wt = {bitmap, 0, 0, width, height, text, lines};
+    WindowText wt = {(uint32_t*) bitmap, 0, 0, width, height, text, lines};
     drawWindow(&wt);
 
     //parseFile(text, &parseExpression);

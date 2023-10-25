@@ -1,9 +1,6 @@
 #include "render.h"
 #include <X11/Xlib.h>
-#include <jmorecfg.h>
 
-//extern unsigned char* bitmap;
-//extern int width; // bitmap width
 extern int height; // bitmap height
 extern int lineHeight; // line height
 extern int scrollX;
@@ -125,7 +122,7 @@ void drawWindow(WindowText *wt) {
     Display *d = XOpenDisplay(NULL);
     if (d == NULL) {
         fprintf(stderr, "Cannot open display\n");
-        return 0;
+        return;
     }
 
     int s = DefaultScreen(d);
@@ -144,8 +141,8 @@ void drawWindow(WindowText *wt) {
         // 116 d 11 u
         if (e.type == KeyPress) switch(e.xkey.keycode) {
             case 9: goto close_window;
-            case 111: wt->y -= 10; break; //u
-            case 116: wt->y += 10; break; //d
+            case 111: wt->y -= 10; break; //up
+            case 116: wt->y += 10; break; //down
         }
         
         drawLines(wt);
@@ -156,5 +153,4 @@ void drawWindow(WindowText *wt) {
     XFree(ximage);
     XFreeGC(d, gc);
     XCloseDisplay(d);
-    return 0;
 }
