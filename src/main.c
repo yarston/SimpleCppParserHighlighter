@@ -48,7 +48,7 @@ char* readFile(const char *fileName, char isString, unsigned int *fileSize) {
 }
 
 ArrayList* getLines(char *textStart, char *textEnd) {
-    ArrayList *lines = newArrayList(16, sizeof (LineText));
+    ArrayList *lines = newArrayList(16, sizeof(LineText));
     for (char *pc = textStart, *prev = textStart; pc < textEnd; pc++) {
         if (*pc == '\n') {
             size_t size = pc - prev;
@@ -77,6 +77,10 @@ void processTokens(char *start, char *end, LexType token) {
 
 int main(int argc, char **argv) {
     
+    int color_class = 0xFFFF55FF;
+    int color_func = 0xFFffaa7f;
+    int color_op = 0xFF55FF00;
+    
     long size;
     unsigned char* fontBuffer;
 
@@ -99,10 +103,43 @@ int main(int argc, char **argv) {
     bitmap = malloc(width * height * 4 * 2);
     map_init(&m);
     //map_init(&fonts);
-    map_set(&m, "int", 1);
-    map_set(&m, "float", 2);
-    map_set(&m, "double", 3);
-    map_set(&m, "void", 4);
+    map_set(&m, "int", color_class);
+    map_set(&m, "long", color_class);
+    map_set(&m, "unsigned", color_class);
+    map_set(&m, "float", color_class);
+    map_set(&m, "double", color_class);
+    map_set(&m, "void", color_class);
+    map_set(&m, "char", color_class);
+    map_set(&m, "FILE", color_class);
+    map_set(&m, "ArrayList", color_class);
+    map_set(&m, "WindowText", color_class);
+    map_set(&m, "LineText", color_class);
+    map_set(&m, "LexType", color_class);
+    map_set(&m, "map_int_t", color_class);
+    map_set(&m, "stbtt_fontinfo", color_class);
+    
+    map_set(&m, "if", color_op);
+    map_set(&m, "for", color_op);
+    map_set(&m, "return", color_op);
+    
+    map_set(&m, "sizeof", color_func);
+    map_set(&m, "main", color_func);
+    map_set(&m, "processTokens", color_func);
+    map_set(&m, "putchar", color_func);
+    map_set(&m, "getLines", color_func);
+    map_set(&m, "newArrayList", color_func);
+    map_set(&m, "add2ArrayList", color_func);
+    map_set(&m, "malloc", color_func);
+    map_set(&m, "memcpy", color_func);
+    map_set(&m, "printf", color_func);
+    map_set(&m, "free", color_func);
+    map_set(&m, "freeArrayList", color_func);
+    map_set(&m, "map_deinit", color_func);
+    map_set(&m, "fseek", color_func);
+    map_set(&m, "fclose", color_func);
+    map_set(&m, "fopen", color_func);
+    map_set(&m, "ftell", color_func);
+    map_set(&m, "fread", color_func);
 
     unsigned fileSize;
     char *text = readFile("src/main.c", true, &fileSize);

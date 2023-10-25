@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-std=c11
-CFLAGS+=-O2 #-g -fsanitize=address
+CFLAGS+=-Os #-g -fsanitize=address
 INCLUDE_DIRS=-I.
 LIBS=-lc -lm -lpthread -lX11
 SOURCE_DIRS := src

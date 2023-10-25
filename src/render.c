@@ -50,7 +50,7 @@ void drawHighlightedLine(stbtt_fontinfo *info, uint32_t *pixmap, int width, char
         switch (lexType) {
             case NAME: {
                 int *val = map_get2(&m, lexStart, lexEnd - lexStart);
-                if (val) argb = 0xFF980866;
+                if (val) argb = *val;
                 else argb = 0xFF00ffe2;
             }
             break;
@@ -58,9 +58,10 @@ void drawHighlightedLine(stbtt_fontinfo *info, uint32_t *pixmap, int width, char
             case DOUBLE:
             case FLOAT:
             case HEX:
-                argb = 0xFFaa00ff;
+                argb = 0xFFFF55FF;
                 break;
             case STRING:
+            case CHARS:
                 argb = 0xFFff7b2e;
                 //lexStart--;
                 //lexEnd++;

@@ -14,11 +14,11 @@ void lexify(char *text, char *textEnd, void (*callback) (char *start, char *end,
                 switch (c) {
                     case '\'':
                         type = CHARS;
-                        start = pc + 1;
+                        start = pc;
                         break;
                     case '"':
                         type = STRING;
-                        start = pc + 1;
+                        start = pc;
                         break;
                     case '0' ... '9':
                         type = NUM;
@@ -189,13 +189,13 @@ void lexify(char *text, char *textEnd, void (*callback) (char *start, char *end,
             case STRING:
                 if (c == '"' && pc[-1] != 92) {
                     type = NONE;
-                    end = pc;
+                    end = pc + 1;
                 }
                 break;
             case CHARS:
                 if (c == '\'' && pc[-1] != 92) {
                     type = NONE;
-                    end = pc;
+                    end = pc + 1;
                 }
                 break;
             case COMMENT:
