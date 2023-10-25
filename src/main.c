@@ -15,9 +15,6 @@
 #include <malloc.h>
 #include "render.h"
 
-//#define STB_IMAGE_WRITE_IMPLEMENTATION
-//#include "stb_image_write.h" /* http://nothings.org/stb/stb_image_write.h */
-
 #define STB_TRUETYPE_IMPLEMENTATION 
 #include "stb_truetype.h" /* http://nothings.org/stb/stb_truetype.h */
 
@@ -108,7 +105,7 @@ int main(int argc, char **argv) {
     map_set(&m, "void", 4);
 
     unsigned fileSize;
-    char *text = readFile("main.c", true, &fileSize);
+    char *text = readFile("src/main.c", true, &fileSize);
     ArrayList* lines = getLines(text, text + fileSize);
     
     WindowText wt = {(uint32_t*) bitmap, 0, 0, width, height, text, lines};
@@ -116,7 +113,7 @@ int main(int argc, char **argv) {
 
     //parseFile(text, &parseExpression);
     //parseFile2(text);
-    lexify(text, text + fileSize, &processTokens);
+    //lexify(text, text + fileSize, &processTokens);
     free(text);
     freeArrayList(lines);
     map_deinit(&m);
